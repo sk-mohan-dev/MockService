@@ -7,6 +7,7 @@ import {
   Inject,
   Post,
 } from "@nestjs/common";
+import { send } from "@vercel/queue";
 import { LOGGER, Logger } from "../../logger/logger.js";
 import { UsersService } from "../domain/users.service.js";
 import { User } from "../domain/users.types.js";
@@ -46,4 +47,21 @@ export class UsersController {
       );
     }
   }
+
+  @Post("orders")
+  async customApi(@Body() order: Order) {
+    const result = await send("orders", order, {
+      idempotencyKey: order.id,
+    });
+
+    return {
+      messageId: result.messageId,
+      data: order,
+    };
+  }
 }
+
+type Order = {
+  id: string;
+  quantity: number;
+};

@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/queue/orders.ts": {
+      "experimentalTriggers": [
+        {
+          "type": "queue/v2beta",
+          "topic": "orders",
+          "retryAfterSeconds": 60
+        }
+      ]
+    }
+  }
+}

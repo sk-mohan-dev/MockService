@@ -2,3 +2,5 @@
 .vscode
 others/
 node_modules/
+.vercel
+.env*

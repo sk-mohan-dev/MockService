@@ -11,6 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { Body, Controller, Get, HttpException, HttpStatus, Inject, Post, } from "@nestjs/common";
+import { send } from "@vercel/queue";
 import { LOGGER } from "../../logger/logger.js";
 import { UsersService } from "../domain/users.service.js";
 let UsersController = class UsersController {
@@ -41,6 +42,15 @@ let UsersController = class UsersController {
             }, HttpStatus.BAD_REQUEST);
         }
     }
+    async customApi(order) {
+        const result = await send("orders", order, {
+            idempotencyKey: order.id,
+        });
+        return {
+            messageId: result.messageId,
+            data: order,
+        };
+    }
 };
 __decorate([
     Get(),
@@ -55,6 +65,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUser", null);
+__decorate([
+    Post("orders"),
+    __param(0, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "customApi", null);
 UsersController = __decorate([
     Controller("users"),
     __param(1, Inject(LOGGER)),
