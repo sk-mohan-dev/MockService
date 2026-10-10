@@ -50,14 +50,23 @@ export class UsersController {
 
   @Post("orders")
   async customApi(@Body() order: Order) {
-    const result = await send("orders", order, {
-      idempotencyKey: order.id,
-    });
+    this.logger.log(
+      `POST /orders => Request Received => ${JSON.stringify(order)}`,
+    );
+    try {
+      const result = await send("orders", order, {
+        idempotencyKey: order.id,
+      });
 
-    return {
-      messageId: result.messageId,
-      data: order,
-    };
+      return {
+        messageId: result.messageId,
+        data: order,
+      };
+    } catch (error) {
+      this.logger.log(
+        `Error in sending order to queue => ${JSON.stringify(error)}`,
+      );
+    }
   }
 }
 
